@@ -2,26 +2,60 @@ package main
 
 import (
 	"fmt"
-	"strings"
+	"os"
+	"strconv"
 )
 
+var biodataTeman = map[int]map[string]string{
+	1: {
+		"nama":      "Mochamad",
+		"alamat":    "Jl.Jombang-Mojokerto No.1",
+		"pekerjaan": "Programmer",
+		"alasan":    "Ingin belajar lebih banyak tentang Go",
+	},
+	2: {
+		"nama":      "Syahrul",
+		"alamat":    "Jl.Jombang-Mojokerto No.2",
+		"pekerjaan": "Freelancer",
+		"alasan":    "Ingin tau tentang microservice",
+	},
+	3: {
+		"nama":      "Samsudin",
+		"alamat":    "Jl.Jombang-Mojokerto No.3",
+		"pekerjaan": "Karyawan",
+		"alasan":    "Mencari jodoh",
+	},
+	4: {
+		"nama":      "Hayolo",
+		"alamat":    "Jl.Jombang-Mojokerto No.4",
+		"pekerjaan": "Mahasiswa",
+		"alasan":    "Mencari ijazah",
+	},
+}
+
 func main() {
-	input := "Selamat Malam"
-	kata := strings.Split(input, "")
 
-	for _, k := range kata {
-		fmt.Println(k)
+	if len(os.Args) != 2 {
+		fmt.Println("Nomor absen tidak diberikan")
+		return
 	}
 
-	hitung := make(map[rune]int)
-	for _, r := range input {
-		hitung[r]++
+	no := os.Args[1]
+
+	nomorAbsenInt, err := strconv.Atoi(no)
+	if err != nil {
+		fmt.Println("Nomor absen harus berupa angka")
+		return
 	}
 
-	hitungString := make(map[string]int)
-	for key, nilai := range hitung {
-		hitungString[string(key)] = nilai
+	teman, nilaiBool := biodataTeman[nomorAbsenInt]
+	if !nilaiBool {
+		fmt.Println("Nomor absen tersebut tidak ditemukan")
+		return
 	}
 
-	fmt.Println(hitungString)
+	fmt.Println("Nama:", teman["nama"])
+	fmt.Println("Alamat:", teman["alamat"])
+	fmt.Println("Pekerjaan:", teman["pekerjaan"])
+	fmt.Println("Alasan:", teman["alasan"])
 }
