@@ -2,25 +2,26 @@ package main
 
 import (
 	"fmt"
+	"strings"
 )
 
 func main() {
-	var i int = 0
-	for i < 5 {
-		fmt.Printf("Nilai i = %d\n", i)
-		i++
-		if i == 5 {
-			for j := 0; j <= 10; j++ {
-				if j == 5 {
-					input := "САШАРВО"
-					for index, value := range input {
-						fmt.Printf("character %U '%c' starts at byte position %d\n", value, value, index)
+	input := "Selamat Malam"
+	kata := strings.Split(input, "")
 
-					}
-				} else {
-					fmt.Printf("nilai J = %d\n", j)
-				}
-			}
-		}
+	for _, k := range kata {
+		fmt.Println(k)
 	}
+
+	hitung := make(map[rune]int)
+	for _, r := range input {
+		hitung[r]++
+	}
+
+	hitungString := make(map[string]int)
+	for key, nilai := range hitung {
+		hitungString[string(key)] = nilai
+	}
+
+	fmt.Println(hitungString)
 }
