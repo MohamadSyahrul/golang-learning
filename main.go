@@ -2,60 +2,57 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"strconv"
+	"math/rand"
+	"sync"
+	"time"
 )
 
-var biodataTeman = map[int]map[string]string{
-	1: {
-		"nama":      "Mochamad",
-		"alamat":    "Jl.Jombang-Mojokerto No.1",
-		"pekerjaan": "Programmer",
-		"alasan":    "Ingin belajar lebih banyak tentang Go",
-	},
-	2: {
-		"nama":      "Syahrul",
-		"alamat":    "Jl.Jombang-Mojokerto No.2",
-		"pekerjaan": "Freelancer",
-		"alasan":    "Ingin tau tentang microservice",
-	},
-	3: {
-		"nama":      "Samsudin",
-		"alamat":    "Jl.Jombang-Mojokerto No.3",
-		"pekerjaan": "Karyawan",
-		"alasan":    "Mencari jodoh",
-	},
-	4: {
-		"nama":      "Hayolo",
-		"alamat":    "Jl.Jombang-Mojokerto No.4",
-		"pekerjaan": "Mahasiswa",
-		"alasan":    "Mencari ijazah",
-	},
-}
+var w sync.WaitGroup
+var m sync.Mutex
 
 func main() {
 
-	if len(os.Args) != 2 {
-		fmt.Println("Nomor absen tidak diberikan")
-		return
+	coba := []interface{}{"coba1", "coba2", "coba3"}
+	bisa := []interface{}{"bisa1", "bisa2", "bisa3"}
+
+	dataAcak(coba, bisa)
+	dataRapi(coba, bisa)
+
+	w.Wait()
+}
+
+func dataAcak(coba []interface{}, bisa []interface{}) {
+	rand.Seed(time.Now().UnixNano())
+	for i := 1; i <= 8; i++ {
+		w.Add(1)
+
+		go func(id int) {
+			defer w.Done()
+			if rand.Intn(2) == 0 {
+				fmt.Printf("%v %d\n", bisa, id)
+			} else {
+				fmt.Printf("%v %d\n", coba, id)
+			}
+		}(i)
 	}
 
-	no := os.Args[1]
+}
 
-	nomorAbsenInt, err := strconv.Atoi(no)
-	if err != nil {
-		fmt.Println("Nomor absen harus berupa angka")
-		return
+func dataRapi(coba1 []interface{}, bisa1 []interface{}) {
+
+	for i := 1; i <= 8; i++ {
+		w.Add(1)
+
+		go func(id int) {
+			m.Lock()
+			defer m.Unlock()
+			if id%2 == 1 {
+				fmt.Printf("%v %d\n", coba1, id)
+			} else {
+				fmt.Printf("%v %d\n", bisa1, id)
+			}
+
+			w.Done()
+		}(i)
 	}
-
-	teman, nilaiBool := biodataTeman[nomorAbsenInt]
-	if !nilaiBool {
-		fmt.Println("Nomor absen tersebut tidak ditemukan")
-		return
-	}
-
-	fmt.Println("Nama:", teman["nama"])
-	fmt.Println("Alamat:", teman["alamat"])
-	fmt.Println("Pekerjaan:", teman["pekerjaan"])
-	fmt.Println("Alasan:", teman["alasan"])
 }
