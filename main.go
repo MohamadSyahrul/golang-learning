@@ -1,58 +1,36 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-	"math/rand"
-	"sync"
-	"time"
 )
 
-var w sync.WaitGroup
-var m sync.Mutex
-
 func main() {
+	defer catchErr()
 
-	coba := []interface{}{"coba1", "coba2", "coba3"}
-	bisa := []interface{}{"bisa1", "bisa2", "bisa3"}
+	var password string
 
-	dataAcak(coba, bisa)
-	dataRapi(coba, bisa)
-
-	w.Wait()
+	fmt.Scanln(&password)
+	if valid, err := validPassword(password); err != nil {
+		panic(err.Error())
+	} else {
+		fmt.Println(valid)
+	}
 }
 
-func dataAcak(coba []interface{}, bisa []interface{}) {
-	rand.Seed(time.Now().UnixNano())
-	for i := 1; i <= 8; i++ {
-		w.Add(1)
-
-		go func(id int) {
-			defer w.Done()
-			if rand.Intn(2) == 0 {
-				fmt.Printf("%v %d\n", bisa, id)
-			} else {
-				fmt.Printf("%v %d\n", coba, id)
-			}
-		}(i)
+func catchErr() {
+	if r := recover(); r != nil {
+		fmt.Println("Error occured:", r)
+	} else {
+		fmt.Println("Application running perfectly")
 	}
 
 }
 
-func dataRapi(coba1 []interface{}, bisa1 []interface{}) {
-
-	for i := 1; i <= 8; i++ {
-		w.Add(1)
-
-		go func(id int) {
-			m.Lock()
-			defer m.Unlock()
-			if id%2 == 1 {
-				fmt.Printf("%v %d\n", coba1, id)
-			} else {
-				fmt.Printf("%v %d\n", bisa1, id)
-			}
-
-			w.Done()
-		}(i)
+func validPassword(password string) (string, error) {
+	panjang := len(password)
+	if panjang < 5 {
+		return "", errors.New("password has to have more than 4 characters")
 	}
+	return "valid password", nil
 }
